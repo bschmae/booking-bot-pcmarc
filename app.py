@@ -65,7 +65,7 @@ def book_time(driver, sport, time_slot, court, day):
     book_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class,'large')]")))
     book_button.click()
 
-# correctly gets the box number each day will be represented in corresponding to todays date
+# correctly gets the box number each day will be represented in corresponding to the current day of the week
 def weekday(day):
     current_date = datetime.datetime.today()
     current_day = current_date.weekday()
