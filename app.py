@@ -34,36 +34,46 @@ def login(driver, username, password):
         print('no notification')
 
 def book_time(driver, sport, time_slot, court, day):
-    sport_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//button[text()='{sport}']")))
+    sport_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[text()='{sport}']")))
     sport_button.click()
 
-    week_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='DaysRangeOptions']//button[{day}]")))
+    week_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='DaysRangeOptions']//button[{day}]")))
     week_button.click()
 
-    time_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{time_slot}']")))
-    time_button.click()
+    driver.execute_script("window.scrollTo(0, 1000)")
+
+    try:
+        time_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{time_slot}']")))
+        time_button.click()
+    except:
+        return 'error: time selected unavailable'
 
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
-    court_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{court}']")))
-    court_button.click()
+    try:
+        court_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{court}']")))
+        court_button.click()
+    except:
+        return 'court selected unavailable'
 
     time.sleep(1)
 
-    next_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[2]//button[1]")))
+    next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[2]//button[1]")))
     next_button.click()
 
     time.sleep(1)
 
-    users_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='1']")))
+    users_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='1']")))
     users_button.click()
 
-    next_button2 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[1]//button[1]")))
+    next_button2 = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[1]//button[1]")))
     next_button2.click()
 
 
-    book_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class,'large')]")))
+    book_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class,'large')]")))
     book_button.click()
+
+    return ('successfully booked')
 
 # correctly gets the box number each day will be represented in corresponding to the current day of the week
 def weekday(day):
@@ -157,17 +167,23 @@ def main(username, password, sport, time, court, day):
 
     if (sport == 'pickleball'):
         sport = 'Indoor Pickleball'
+    else:
+        sport = 'Indoor Tennis Courts'
 
     day_selected = weekday(day)
 
-    login(driver, username, password)
+    try:
+        login(driver, username, password)
+    except:
+        print('unsuccessful login')
+ 
+    status = book_time(driver, sport, time, court, day_selected)
+    print(status)
 
-    book_time(driver, sport, time, court, day_selected)
 
-    print('successfully booked')
 
 main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
 
-# python3 app.py wbschmae@gmail.com iridepc22 pickleball 7:30-8am 'Pickleball 9B' Thursday
+# python3 app.py wbschmae@gmail.com iridepc22 pickleball 7:30-8am 'Pickleball 9B' Wednesday
 
 
