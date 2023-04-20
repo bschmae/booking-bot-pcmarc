@@ -19,9 +19,11 @@ class Booking(webdriver.Chrome):
         if self.teardown:
             self.quit()
 
+    #access the first page
     def land_first_page(self):
         self.get(const.LOGIN_URL) 
 
+    #login
     def login(self, username, password):
         user_block = self .find_element(By.NAME, 'user[email]')
         pw_block = self.find_element(By.NAME, 'user[password]')
@@ -35,6 +37,7 @@ class Booking(webdriver.Chrome):
         submit_button = self.find_element(By.XPATH, "//input[@name='commit']")
         submit_button.click()
     
+    #navigate to booking page
     def nav_to_booking_page(self):
         book_now_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.LINK_TEXT, 'BOOK NOW')))
         book_now_button.click()
@@ -46,51 +49,64 @@ class Booking(webdriver.Chrome):
         except:
             print('no notification')
     
+    #make reservation
     def make_res(self, sport, day, time_slot, court):
         if (sport == 'pickleball'):
             sport = 'Indoor Pickleball'
         else: 
             sport = 'Indoor Tennis Courts'
 
+        #select sport
         sport_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[text()='{sport}']")))
         sport_button.click()
 
+        #select day
         week_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='DaysRangeOptions']//button[{day}]")))
         week_button.click()
 
         self.execute_script("window.scrollTo(0, 1000)")
 
+        #select time slot
         try:
             time_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{time_slot}']")))
             time_button.click()
         except:
+            self.close()
             return 'error: time selected unavailable'
 
+
+        #scroll down
         self.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
+        #select court
         try:
             court_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[normalize-space()='{court}']")))
             court_button.click()
         except:
+            self.close()
             return 'court selected unavailable'
 
         time.sleep(1)
 
+        #next form
         next_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[2]//button[1]")))
         next_button.click()
 
         time.sleep(1)
 
+        #select number of users
         users_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='1']")))
         users_button.click()
 
+        #next form
         next_button2 = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='position_sticky_bottom_on_mobile bk_white mtb20 ptb10 z-index-1']//div[1]//button[1]")))
         next_button2.click()
 
-
+        #finalize the reservation
         book_button = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class,'large')]")))
         book_button.click()
 
+        self.close()
         return ('successfully booked')
     
     def weekday(self, day):
